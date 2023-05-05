@@ -1,0 +1,16 @@
+from math import gcd
+n = int(input("ENTER N VALUE = "))
+e = int(input("ENTER E VALUE = "))
+blocks = [877, 2067, 1180, 3317, 1608]
+block_with_common_factor = None
+for block in blocks:
+    if gcd(block, n) > 1:
+        block_with_common_factor = block
+        break
+p = gcd(block_with_common_factor, n)
+q = n // p
+phi_n = (p - 1) * (q - 1)
+d = pow(e, -1, phi_n)
+decrypted_blocks = [pow(block, d, n) for block in blocks]
+print("Private key: ({}, {})".format(d, n))
+print("Decrypted blocks:", decrypted_blocks)
