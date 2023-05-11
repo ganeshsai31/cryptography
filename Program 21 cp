@@ -1,0 +1,73 @@
+import random
+import math
+# Function to compute modular exponentiation (base^exponent mod modulus)
+def mod_exp(base, exponent, modulus):
+    result = 1
+    while exponent > 0:
+        if exponent % 2 == 1:
+            result = (result * base) % modulus
+        base = (base * base) % modulus
+        exponent = exponent // 2
+    return result
+
+# Function to generate a random prime number within a given range
+def generate_prime(min_value, max_value):
+    while True:
+        prime_candidate = random.randint(min_value, max_value)
+        if is_prime(prime_candidate):
+            return prime_candidate
+
+# Function to check if a number is prime
+def is_prime(number):
+    if number < 2:
+        return False
+    for i in range(2, int(number ** 0.5) + 1):
+        if number % i == 0:
+            return False
+    return True
+
+# Function to generate RSA keys
+def generate_rsa_keys():
+    # Choose two large prime numbers p and q
+    p = generate_prime(10*10, 10*11)
+    q = generate_prime(10*10, 10*11)
+
+    # Compute modulus n
+    n = p * q
+
+    # Compute Euler's totient function value (phi(n))
+    phi = (p - 1) * (q - 1)
+
+    # Choose a large public exponent e
+    e = random.randint(2, phi - 1)
+    while math.gcd(e, phi) != 1:
+        e = random.randint(2, phi - 1)
+
+    # Compute the modular multiplicative inverse of e (private exponent d)
+    d = pow(e, -1, phi)
+
+    return (e, n), (d, n)
+
+# Function to encrypt a plaintext using RSA public key
+def encrypt(plaintext, public_key):
+    e, n = public_key
+    ciphertext = [mod_exp(char, e, n) for char in plaintext]
+    return ciphertext
+
+# Function to decrypt a ciphertext using RSA private key
+def decrypt(ciphertext, private_key):
+    d, n = private_key
+    plaintext = [mod_exp(char, d, n) for char in ciphertext]
+    return plaintext
+
+# Generate RSA keys
+public_key, private_key = generate_rsa_keys()
+
+# Example usage
+plaintext = [0, 18, 2, 14]  # Representing "A R C O"
+ciphertext = encrypt(plaintext, public_key)
+decrypted_text = decrypt(ciphertext, private_key)
+
+print("Original Message:", plaintext)
+print("Ciphertext:", ciphertext)
+print("Decrypted Message:", decrypted_text)
